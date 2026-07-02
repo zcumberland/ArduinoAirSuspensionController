@@ -184,6 +184,7 @@ class BLEManager extends ChangeNotifier {
   bool airOutOnShutoff = false;
   bool safetyMode = true;
   bool aiStatusEnabled = false;
+
   /// Mirrors ConfigFlagsBit::CONFIG_HEIGHT_SENSOR_MODE (preserved on save).
   bool heightSensorMode = false;
   String bleBroadcastName = '';
@@ -221,10 +222,8 @@ class BLEManager extends ChangeNotifier {
   int auxPulseDuration = 1;
   int auxIntervalCycles = 0;
 
-  bool get auxStartupTimed =>
-      (auxModeByte & auxStartupTimedMask) != 0;
-  bool get auxShutdownTimed =>
-      (auxModeByte & auxShutdownTimedMask) != 0;
+  bool get auxStartupTimed => (auxModeByte & auxStartupTimedMask) != 0;
+  bool get auxShutdownTimed => (auxModeByte & auxShutdownTimedMask) != 0;
 
   void setAuxStartupTimed(bool on) {
     if (on) {
@@ -373,7 +372,7 @@ class BLEManager extends ChangeNotifier {
     try {
       _startGlobalConnListener(); // ensure listener is active
       print("Connecting to device: ${device.name} (${device.id})");
-      await device.connect(autoConnect: false);
+      await device.connect(autoConnect: false, license: License.nonprofit);
 
       connectedDevice = device;
       notifyListeners();
@@ -396,7 +395,7 @@ class BLEManager extends ChangeNotifier {
     try {
       _startGlobalConnListener(); // ensure listener is active
       print("Connecting to device: ${device.name} (${device.id})");
-      await device.connect(autoConnect: false);
+      await device.connect(autoConnect: false, license: License.nonprofit);
 
       connectedDevice = device;
       notifyListeners();
@@ -520,8 +519,8 @@ class BLEManager extends ChangeNotifier {
   static const int bp32DisconnectDevices = 2;
 
   void sendBp32Command(int cmd, {bool value = true}) {
-    sendRestCommand(buildRestPacket(BTOasIdentifier.BP32PKT,
-        [BLEShort(cmd), BLEShort(value ? 1 : 0)]));
+    sendRestCommand(buildRestPacket(
+        BTOasIdentifier.BP32PKT, [BLEShort(cmd), BLEShort(value ? 1 : 0)]));
   }
 
   void sendRfCommand(int commandType, int valueOne, int valueTwo) {
@@ -535,13 +534,11 @@ class BLEManager extends ChangeNotifier {
   /// Assign key fob button to preset [presetOneToFive] (1–5).
   void sendRfButtonPresetAssign(int rfButtonNumber, int presetOneToFive) {
     final p = presetOneToFive.clamp(1, 5);
-    sendRfCommand(
-        rfCommandButtonAssign, rfButtonNumber, p - 1);
+    sendRfCommand(rfCommandButtonAssign, rfButtonNumber, p - 1);
   }
 
   void sendDetectPressureSensors() {
-    sendRestCommand(
-        buildRestPacket(BTOasIdentifier.DETECTPRESSURESENSORS, []));
+    sendRestCommand(buildRestPacket(BTOasIdentifier.DETECTPRESSURESENSORS, []));
   }
 
   void sendResetAi() {
@@ -577,8 +574,7 @@ class BLEManager extends ChangeNotifier {
     for (var i = 0; i < p.length && i < 49; i++) {
       args[50 + i] = p[i];
     }
-    sendRestCommand(
-        [..._encodeInt32(BTOasIdentifier.STARTWEB), ...args]);
+    sendRestCommand([..._encodeInt32(BTOasIdentifier.STARTWEB), ...args]);
   }
 
   /// Toggle one wheel bit in [heightSensorInvertBits] (0..3 = FP, RP, FD, RD order matches wireless labels).

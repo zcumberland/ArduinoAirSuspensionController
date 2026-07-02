@@ -6,7 +6,7 @@ import FlutterMacOS
 import Foundation
 
 import file_selector_macos
-import flutter_blue_plus
+import flutter_blue_plus_darwin
 import path_provider_foundation
 import shared_preferences_foundation
 import url_launcher_macos
